@@ -11,21 +11,26 @@
 // console.log(subject.total())
 
 
-let p = new Promise((resolve,reject)=>{
-    let sucess = true
+// let p = new Promise((resolve,reject)=>{
+//     let sucess = true
 
-    setTimeout(()=>{
-        if(sucess){
-            resolve("Operation successfullt")
-        }else{
-            reject("Failed")
-        }
-    },2000)
-})
+//     setTimeout(()=>{
+//         if(sucess){
+//             resolve("Operation successfullt")
+//         }else{
+//             reject("Failed")
+//         }
+//     },2000)
+// })
 
-p.then(result=>{
-    alert("this is the file ",result)
-})
-.catch(error=>{
-    console.log(error)
-})
+// p.then(result=>{
+//     console.log(result)
+// })
+// .catch(error=>{
+//     console.log(error)
+// })
+
+function sum (a,b){
+    return a+b
+}
+console.log(sum(5,5))
