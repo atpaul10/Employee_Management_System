@@ -24,7 +24,7 @@ let p = new Promise((resolve,reject)=>{
 })
 
 p.then(result=>{
-    console.log(result)
+    alert("this is the file ",result)
 })
 .catch(error=>{
     console.log(error)
