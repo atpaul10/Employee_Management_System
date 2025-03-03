@@ -1,0 +1,57 @@
+import React from "react";
+import { Card, CardContent, Typography, Grid, Chip } from "@mui/material";
+import EventNoteIcon from "@mui/icons-material/EventNote"; // For leave type
+import DateRangeIcon from "@mui/icons-material/DateRange"; // For dates
+import NotesIcon from "@mui/icons-material/Notes"; // For reason
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline"; // For status
+
+const PendingLeaveRequest = ({ pendingLeaves }) => {
+  return (
+    <div style={{ padding: "20px" }}>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
+        Pending Leave Requests
+      </Typography>
+
+      {pendingLeaves.length === 0 ? (
+        <Typography variant="body1" color="textSecondary">
+          No pending leave requests.
+        </Typography>
+      ) : (
+        <Grid container spacing={2}>
+         {pendingLeaves.map((leave) => (
+            <Grid item xs={12} sm={6} md={4} key={leave.id}>
+              <Card variant="outlined" sx={{ borderRadius: "8px", padding: "10px", background: "#f9f9f9" }}>
+                <CardContent>
+                  <Typography variant="subtitle1" sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <EventNoteIcon color="primary" /> <strong>Leave Type:</strong> {leave.leaveType}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "5px" }}>
+                    <DateRangeIcon color="action" /> <strong>Start:</strong> {leave.startDate} - <strong>End:</strong> {leave.endDate}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "5px" }}>
+                    <NotesIcon color="secondary" /> <strong>Reason:</strong> {leave.reason}
+                  </Typography>
+
+                  <Chip
+                    label={leave.status}
+                    sx={{
+                      marginTop: "10px",
+                      backgroundColor: leave.status === "Pending" ? "#f57c00" : "#4caf50",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                    icon={<CheckCircleOutlineIcon />}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid> 
+      )}
+    </div>
+  );
+};
+
+export default PendingLeaveRequest;
