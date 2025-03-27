@@ -70,7 +70,7 @@ export const fetchAttendanceData = createAsyncThunk(
       const db = getFirestore();
       const today = new Date().toLocaleDateString("en-CA");
 
-      /** Fetch individual attendance history in the user */
+      /* Fetch individual attendance history in the user */
       if (currentUser && currentUser.uid) {
         const checkinsRef = collection(db, "users", currentUser.uid, "checkins");
         const snapshot = await getDocs(checkinsRef);

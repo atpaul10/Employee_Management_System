@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState ,useMemo} from "react";
 import {collection,onSnapshot,doc,updateDoc,getDoc,} from "firebase/firestore";
 import { db } from "../../../firebase";
@@ -161,31 +162,24 @@ const EmployeeLeaveRequest = () => {
                     <strong>Employee Name </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Leave Type </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Start Date </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>End Date </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Leave Days </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Reson </strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Status</strong>
                   </TableCell>
                   <TableCell>
-                    {" "}
                     <strong>Action </strong>
                   </TableCell>
                 </TableRow>
@@ -253,6 +247,7 @@ const EmployeeLeaveRequest = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          
           {/* leave request history  */}
           <Typography variant="h5" gutterBottom>
             Leave Request History

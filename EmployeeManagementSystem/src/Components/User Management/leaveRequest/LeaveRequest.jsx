@@ -1,4 +1,5 @@
 import { useState, useEffect ,} from "react";
+import React from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import {Button,MenuItem,TextField,Card,Dialog,DialogTitle,DialogContent,DialogActions,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,CircularProgress,Typography,Box,}from "@mui/material";
@@ -37,6 +38,7 @@ const LeaveRequest = () => {
   );
 
   useEffect(() => {
+    document.title = "Leave Rquest"
     const storedUser = JSON.parse(localStorage.getItem("CurrentUser"));
     if (storedUser) {
       const userId = storedUser.uid;

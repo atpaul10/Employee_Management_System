@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { db } from "../firebase";
 import { collection, getDocs, doc, updateDoc, getDoc, onSnapshot } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 export const fetchCurrentEmployeeWorkLogs = createAsyncThunk(
   "workLogs/fetchCurrentEmployeeWorkLogs",
@@ -31,7 +32,6 @@ export const fetchAllEmployeesWorkLogs = createAsyncThunk(
       const unsubscribeUsers = onSnapshot(
         userRef,
         (usersSnapshot) => {
-          // Clear previous listeners
           workLogUnsubscribes.forEach((unsub) => unsub());
           workLogUnsubscribes = [];
 
@@ -51,7 +51,7 @@ export const fetchAllEmployeesWorkLogs = createAsyncThunk(
                   })),
                 };
                 allWorkLogs.push(employeeWorkLogs);
-                // Replace the entire state with the latest data
+                
                 dispatch(updateAllEmployeesWorkLogs([...allWorkLogs]));
               },
               (error) => {
@@ -86,7 +86,8 @@ export const updateLog = createAsyncThunk(
       const logRef = doc(db, "users", currentUser.uid, "workLogs", logId);
       const docSnapshot = await getDoc(logRef);
 
-      if (!docSnapshot.exists()) throw new Error("Work Log Not Found");
+      if (!docSnapshot.exists()) 
+         toast.error("Work Log Not Found");
 
       const workLogData = docSnapshot.data();
       const updatedTasks = [...workLogData.tasks];
@@ -111,7 +112,7 @@ const workLogSlice = createSlice({
   },
   reducers: {
     updateAllEmployeesWorkLogs: (state, action) => {
-      state.allEmployeesWorkLogs = action.payload; // Replace entire array
+      state.allEmployeesWorkLogs = action.payload; 
     },
     updateEmployeeWorkLogsRealTime: (state, action) => {
       const updatedEmployee = action.payload;
@@ -169,7 +170,6 @@ const workLogSlice = createSlice({
       })
       .addCase(fetchAllEmployeesWorkLogs.fulfilled, (state, action) => {
         state.loading = false;
-        // No direct state update here; handled by onSnapshot
       })
       .addCase(fetchAllEmployeesWorkLogs.rejected, (state, action) => {
         state.loading = false;

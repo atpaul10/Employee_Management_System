@@ -2,6 +2,7 @@ import { getDoc, doc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import { Typography } from "@mui/material";
+import React from "react";
 
 const GreetingMessage = () => {
   const [userName, setUserName] = useState(null);
@@ -45,7 +46,7 @@ const GreetingMessage = () => {
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
       <img src={sunImage()} alt="Sun Image" style={{ width: "50px", height: "40px" }} />
       <Typography variant="h6" fontWeight="bold">
-        {getGreeting()}, {userName?.name || "Admin"}! 👋
+        {getGreeting()}, {userName?.name || "Admin"}👋
       </Typography>
     </div>
   );

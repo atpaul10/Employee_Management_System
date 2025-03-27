@@ -1,6 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchAttendanceData } from "../../../Redux/attendanceSlice";
+import React from "react";
+import { Box, CircularProgress, Grid2 } from "@mui/material";
 
 const AttendanceManager = () => {
   const dispatch = useDispatch();
@@ -46,7 +48,9 @@ const AttendanceManager = () => {
             Attendance History
           </h2>
           {loading ? (
-            <p className="text-center">Loading...</p>
+            <Box  display="grid" justifyContent="center" alignItems="center">
+              <CircularProgress style={{color:"#40513B"}} size={30} thickness={5} />
+            </Box>
           ) : (
             <div className="overflow-x-auto">
               <table className="table-auto w-full border-collapse border border-gray-200">

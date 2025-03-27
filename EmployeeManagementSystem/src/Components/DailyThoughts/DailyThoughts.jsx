@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Snackbar, Alert, } from "@mui/material";
+import React from "react";
 
 const DailyThoughts = () => {
   const [thought, setThought] = useState("");
@@ -27,7 +28,7 @@ const DailyThoughts = () => {
     }
   };
   useEffect(() => {
-    // fetchThoughts();
+    fetchThoughts(); 
   }, []);
 
   return (
@@ -43,7 +44,6 @@ const DailyThoughts = () => {
           onClose={() => setOpen(false)}
           sx={{ width: "100%" }}
           icon ={false}>
-
           "{thought}" — {author}
         </Alert>
       </Snackbar>

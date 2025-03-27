@@ -1,5 +1,5 @@
 import { Navigate } from "react-router";
-
+import React from "react";
 const  ProtectedRoute = ({children ,role}) => {
     const currentUser = JSON.parse(localStorage.getItem("CurrentUser"));
 

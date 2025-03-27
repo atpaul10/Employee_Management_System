@@ -1,37 +1,34 @@
-import { useState } from "react";
-import {
-  FaUsers,
-  FaCalendarAlt,
-  FaDollarSign,
-  FaClipboardList,
-  FaFileInvoiceDollar,
-  FaPlusCircle,
-  FaBars,
-  FaHome,
-  FaChevronDown,
-  FaChevronUp,
-} from "react-icons/fa";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { FaUsers, FaCalendarAlt, FaClipboardList, FaPlusCircle, FaHome, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { LuLogs } from "react-icons/lu";
+import { MdOutlinePreview } from "react-icons/md";
 
 const Sidebar = () => {
-  const [openSections, setOpenSections] = useState({});
 
+  const [openSections, setOpenSections] = useState({
+    employeeManagement: false,
+    attendanceLeave: false,
+    employeeworklogs: false,
+  });
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
       ...prev,
-      [section]: !prev[section],
-    }));
+      [section]: !prev[section] ?? false, 
+    }));  
   };
 
   return (
     <div className="bg-indigo-950 text-white h-screen w-60 fixed top-0 left-0 overflow-y-auto z-20">
       <div className="p-4 flex items-center justify-center">
-        <FaBars className="text-white text-xl cursor-pointer" />
+        <div className="text-white text-xl cursor-pointer"></div>
       </div>
+
       <div className="space-y-6 px-4">
+        {/* Dashboard */}
         <Link
           to="/admindashboard"
-          className="flex items-center space-x-2 py-2 text-sm hover:bg-indigo-800 rounded-md px-2"
+          className="flex items-center space-x-2 py-2 text-sm hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
         >
           <FaHome />
           <span className="ml-2">Dashboard</span>
@@ -41,7 +38,8 @@ const Sidebar = () => {
         <div className="space-y-2">
           <button
             onClick={() => toggleSection("employeeManagement")}
-            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2"
+            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
+            aria-expanded={openSections.employeeManagement}
           >
             <div className="flex items-center space-x-2">
               <FaUsers />
@@ -53,14 +51,14 @@ const Sidebar = () => {
             <div className="pl-6">
               <Link
                 to="/employee-directory"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >
                 <FaClipboardList />
                 <span>Employee Directory</span>
               </Link>
               <Link
                 to="/add-employee"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >
                 <FaPlusCircle />
                 <span>Add Employee</span>
@@ -73,7 +71,8 @@ const Sidebar = () => {
         <div className="space-y-2">
           <button
             onClick={() => toggleSection("attendanceLeave")}
-            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2"
+            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
+            aria-expanded={openSections.attendanceLeave}
           >
             <div className="flex items-center space-x-2">
               <FaCalendarAlt />
@@ -85,14 +84,14 @@ const Sidebar = () => {
             <div className="pl-6">
               <Link
                 to="/employee-attendance-management"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >
                 <FaCalendarAlt />
                 <span>Employee Attendance Management</span>
               </Link>
               <Link
                 to="/leave-request-management"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >
                 <FaClipboardList />
                 <span>Leave Request Management</span>
@@ -101,37 +100,31 @@ const Sidebar = () => {
           )}
         </div>
 
-        {/* Payroll Management */}
-        {/* <div className="space-y-2">
+        {/* Work Logs */}
+        <div className="space-y-2">
           <button
-            onClick={() => toggleSection("payrollManagement")}
-            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2"
+            onClick={() => toggleSection("employeeworklogs")}
+            className="flex items-center justify-between w-full py-2 text-sm hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
+            aria-expanded={openSections.employeeworklogs}
           >
             <div className="flex items-center space-x-2">
-              <FaDollarSign />
-              <span>Payroll Management</span>
+              <LuLogs />
+              <span>Employee Work-Logs</span>
             </div>
-            {openSections.payrollManagement ? <FaChevronUp /> : <FaChevronDown />}
+            {openSections.employeeworklogs ? <FaChevronUp /> : <FaChevronDown />}
           </button>
-          {openSections.payrollManagement && (
+          {openSections.employeeworklogs && (
             <div className="pl-6">
               <Link
-                to="/salary-processing"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
+                to="/employee-worklogs"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >
-                <FaDollarSign />
-                <span>Salary Processing</span>
-              </Link>
-              <Link
-                to="/pay-slip"
-                className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2"
-              >
-                <FaFileInvoiceDollar />
-                <span>Pay Slip Generation</span>
+                <MdOutlinePreview />
+                <span>View Employee Work-logs</span>
               </Link>
             </div>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import {  Table,  TableBody,  TableCell,  TableContainer,  TableHead,  TableRow,  Paper,  Typography,  Chip, Button,} from "@mui/material";
+import React from "react";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Chip, } from "@mui/material";
 import EventNoteIcon from "@mui/icons-material/EventNote"; 
 import DateRangeIcon from "@mui/icons-material/DateRange"; 
 import NotesIcon from "@mui/icons-material/Notes"; 
@@ -7,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 const PendingLeaveRequest = ({ pendingLeaves }) => {
 
     const navigate = useNavigate()
-
+    
     const handleNavigate = ()=>{
         navigate("/leave-request-management")
     }
@@ -19,7 +20,7 @@ const PendingLeaveRequest = ({ pendingLeaves }) => {
 
       {pendingLeaves.length === 0 ? (
         <Typography variant="body1" color="textSecondary">
-          No pending leave requests.
+          No pending leave requests.  
         </Typography>
       ) : (
         <TableContainer component={Paper} sx={{ borderRadius: "8px", background: "#f9f9f9" }}>
@@ -35,7 +36,13 @@ const PendingLeaveRequest = ({ pendingLeaves }) => {
             </TableHead>
             <TableBody>
               {pendingLeaves.map((leave) => (
-                <TableRow key={leave.id}>
+                <TableRow 
+                key={leave.id} 
+                onClick = {handleNavigate}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": { backgroundColor: "#b5d1f5" }, 
+                }}>
                   <TableCell>
                     <EventNoteIcon color="primary" sx={{ verticalAlign: "middle", marginRight: 1 }} />
                     {leave.leaveType}
@@ -53,7 +60,7 @@ const PendingLeaveRequest = ({ pendingLeaves }) => {
                     {leave.reason}
                   </TableCell>
                   <TableCell>
-                    <Button onClick={handleNavigate} sx={{padding:0}}>
+                    
                     <Chip
                       label={leave.status}
                       sx={{
@@ -61,9 +68,7 @@ const PendingLeaveRequest = ({ pendingLeaves }) => {
                         color: "white",
                         fontWeight: "bold",
                       }}
-                   
                     />
-                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -74,5 +79,4 @@ const PendingLeaveRequest = ({ pendingLeaves }) => {
     </div>
   );
 };
-
 export default PendingLeaveRequest;

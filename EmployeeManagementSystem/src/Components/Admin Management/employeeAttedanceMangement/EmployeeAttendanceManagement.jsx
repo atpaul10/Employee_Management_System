@@ -1,3 +1,4 @@
+import React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import {getFirestore,collection,query,where,onSnapshot,} from "firebase/firestore";
@@ -21,7 +22,6 @@ const EmployeeAttendanceManagement = () => {
   
   useEffect(() => {
     const unsubscribeUsers = subscribeToRealTimeUpdates();
-   
     document.title = "Employee Attendance Record ";
     return () => {
       unsubscribeUsers();
@@ -51,7 +51,6 @@ const EmployeeAttendanceManagement = () => {
             }));
 
             const employeeMap = {};
-
             // it find the employeedetail where fullname of the matche the name of user
             users.forEach((user) => {
               const matchedEmployeeDetails = allEmployeeDetails.find(

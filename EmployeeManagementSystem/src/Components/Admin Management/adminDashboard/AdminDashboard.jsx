@@ -1,31 +1,33 @@
+import React from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployees } from "../../../Redux/employeeSlice";
 import { fetchAllPendingLeaves } from "../../../Redux/leaveSlice";
 import { fetchAttendanceData } from "../../../Redux/attendanceSlice";
 import GreetingMessage from "../../../utils/GreetingMessage";
-import { Box, Typography, Grid2 } from "@mui/material";
-import {Bar,} from "react-chartjs-2"
-import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend,} from "chart.js";
+import { Box, Typography, Grid2, Card,CardContent } from "@mui/material";
+import {Bar, Pie} from "react-chartjs-2"
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend,ArcElement} from "chart.js";
 import CountUp from "react-countup"
 import useAttendanceData from "../employeeAttedanceMangement/Hooks/useAttendance";
 import { Timestamp } from "firebase/firestore";
-import DailyThoughts from "../../../DailyThoughts/DailyThoughts";
-import PendingLeaveRequest from "./PendingLeaveList";
+import DailyThoughts from "../../DailyThoughts/DailyThoughts";
+import PendingLeaveRequest from "../../../utils/PendingLeaveList";
 
-
-ChartJS.register(BarElement,CategoryScale,LinearScale,Tooltip,Legend )
+ChartJS.register(BarElement,CategoryScale,LinearScale,Tooltip,Legend,ArcElement,ChartDataLabels )
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employee.employees);
   const departmentWiseCount = useSelector((state)=>state.employee.departmentWiseCount)
   // const pendingLeaveCount = useSelector((state) => state.leave.pendingLeaveCount);
-  const { pendingLeaveCount, pendingLeaveDetails, loading, error } = useSelector((state) => state.leave);
+  const { pendingLeaveCount, pendingLeaveDetails, } = useSelector((state) => state.leave);
   const totalEmployees = employees.length;
   const totalDepartment = Object.keys(departmentWiseCount).length
   const totalPendingLeaves = pendingLeaveCount ? pendingLeaveCount : 0;
   const notCheckinToady = useSelector(state=>state.attendance.notCheckedInCount)
+  const upcomingBirthday  = useSelector((state)=>state.employee.upcomingBirthday)
 
   const{employees:attendanceRecords,totalCheckinToday,totalCheckoutToday}= useAttendanceData()
 
@@ -36,17 +38,38 @@ const AdminDashboard = () => {
     document.title="Admin Dashoard"
   }, [dispatch]);
 
-   const data = {
-    labels: Object.keys(departmentWiseCount), 
+  const departmentPieChartData = {
+    labels: Object.keys(departmentWiseCount),
     datasets: [
       {
         label: "Employees",
-        data: Object.values(departmentWiseCount), 
-        backgroundColor: "#1976d2",
-        borderRadius: 5,
+        data: Object.values(departmentWiseCount),
+        backgroundColor: [
+          "#1976d2", "#4caf50", "#f44336", "#ff9800", "#9c27b0",
+          "#00bcd4", "#8bc34a", "#ffc107", "#795548", "#607d8b"
+        ],
+        hoverOffset: 4,
       },
     ],
   };
+
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {position: "bottom",},
+      datalabels: {
+        color: 'white', // Label color
+        font: {
+          weight: 'bold',
+          size: 14},
+        formatter: (value, context) => {
+          const label = context.chart.data.labels[context.dataIndex];
+          return `${label}: ${value}`; 
+        }
+      }
+    },
+  };
+  
 
 const today = new Date();
 today.setHours(0, 0, 0, 0); 
@@ -137,7 +160,7 @@ const groupedBarChartData = {
     return time.getTime(); 
   }
   
-  console.log("Attendance record",attendanceRecords)
+  // console.log("Attendance record",attendanceRecords)
   return (
     <>
       {/* Greeting Message at the top */}
@@ -198,17 +221,41 @@ const groupedBarChartData = {
         </Grid2>
       </Grid2>
 
-      {/* Chart box */}
-      <Box sx={{ marginTop: 6, width: "100%", maxWidth: 500, height: 250 }}>
-      <Typography variant="h6" sx={{ marginBottom: 2 }}>
-          <strong>Employee Distribution by Department</strong>
-      </Typography>
-      <Bar data={data} options={options}/>
+      
+      <Box sx={{ marginTop: 6, width: "100%",  display:"flex", gap:2}}>
+        {/* pie graph section  */}
+       <Grid2 container spacing={2}>
+        <Grid2 item xs={12} md={6}>
+            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+              <strong>Employee Distribution by Department</strong>
+            </Typography>
+            <Pie data={departmentPieChartData} options={pieChartOptions} />
+        </Grid2>
+
+        {/* upcoming birthday section*/}
+       <Grid2 item xs={12} md={6}>
+          <Card sx={{height:150, width:250,padding:2,overflowY: 'auto'  }}>
+            <Typography variant="h6" sx={{marginBottom: 2}}> Upcoming Birthday </Typography>
+             {upcomingBirthday.length > 0 ?(
+            upcomingBirthday.filter((employee)=>employee !== null && employee !== undefined)
+              .map((employee)=>(
+                <CardContent key={employee.id} sx={{ padding: '8px 0', borderBottom: '1px solid #e0e0e0' }}>
+                    <Typography>
+                      {employee?.fullName || '----'} - {employee?.day || '----'} {employee?.month || '---'}
+                    </Typography>
+                  </CardContent>  
+              ))
+          ):(
+            <Typography color="textSecondary">No Upcoming Birthdays...</Typography>
+          )}
+          </Card>
+       </Grid2>
+      </Grid2>
     </Box>
 
      {/*  Check-In & Check-Out Trends */}
      <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 6 }}>
-         <Box sx={{ width: "100%", maxWidth: 500, height: 250, textAlign: "center" }}>
+         <Box sx={{ width: "100%", maxWidth: 600, height: 350, textAlign: "center" }}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
                <strong>Clock-In & Clock-Out Trends</strong>
              </Typography>
@@ -219,7 +266,6 @@ const groupedBarChartData = {
       {/* <Box sx={{ marginTop: 6, width: "100%", maxWidth: 500, height: 250 }}>
     </Box> */}
         <PendingLeaveRequest pendingLeaves={pendingLeaveDetails}/>
-
 
     </>
   );

@@ -74,34 +74,6 @@ export const addLeaveRequest = createAsyncThunk(
       }
     }
   );
-  // export const fetchAllPendingLeaves = createAsyncThunk(
-  //   "leave/fetchAllPendingLeaves",
-  //   async (_, { rejectWithValue }) => {
-  //     try {
-  //       const usersCollection = collection(db, "users");
-  //       const usersSnapshot = await getDocs(usersCollection);
-        
-  //       // Fetch pending leave counts for all users in parallel
-  //       const pendingLeaveCountPromises = usersSnapshot.docs.map(async (userDoc) => {
-  //         const leaveCollection = collection(db, `users/${userDoc.id}/leaveRequest`);
-  //         const leaveSnapshot = await getDocs(leaveCollection);
-          
-  //         // Count only the leave requests that have "Pending" status
-  //         return leaveSnapshot.docs.filter((doc) => doc.data().status === "Pending").length;
-  //       });
-  
-  //       const pendingLeaveCounts = await Promise.all(pendingLeaveCountPromises);
-        
-  //       // Calculate total pending leave count
-  //       const totalPendingLeaves = pendingLeaveCounts.reduce((sum, count) => sum + count, 0);
-  
-  //       return totalPendingLeaves;
-  //     } catch (error) {
-  //       return rejectWithValue(error.message);
-  //     }
-  //   }
-  // );
-  
   export const fetchAllPendingLeaves = createAsyncThunk(
     "leave/fetchAllPendingLeaves",
     async (_, { rejectWithValue }) => {

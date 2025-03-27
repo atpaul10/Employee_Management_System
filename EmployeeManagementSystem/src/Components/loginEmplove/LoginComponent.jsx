@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import React from "react";
 import loginImage from "../../assets/loginImage.png";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -44,16 +45,12 @@ const LoginComponent = () => {
         await updateDoc(userDocRef, {
           leaveBalance: initialLeaveBalances,
         });
-
-        // toast.info("Leave balance initialized.");
       }
   
-
         if (role !== userData.role) {
           toast.error("You are not Authorized .");
           return;
         }
-
         // Store current user data locally
         const currentUser = { ...userData, uid: user.uid };
         localStorage.setItem("CurrentUser", JSON.stringify(currentUser));

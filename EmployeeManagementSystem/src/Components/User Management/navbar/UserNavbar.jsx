@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkInOut } from "../../../Redux/attendanceSlice";
+import { checkInOut,} from "../../../Redux/attendanceSlice";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import React from "react";
+import { persistor,store } from "../../../Redux/store";
 
 
 const UserNavbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // const officeLocation = { lat: 22.30108644912575, lng: 73.13965197117078 };
-  // const officeLocation = { lat: 22.33494, lng: 73.14214 };  // house location for testing
 
   const officeLocation = [
     {id:1, name:"Head Office",lat:22.3018644912575, lng:73.13965197117078},
@@ -72,10 +72,10 @@ const UserNavbar = () => {
               officename = office.name
               break;
             }
-          }
+          } 
             if(iswithOffice){
              dispatch(checkInOut({ type, currentUser }));
-              toast.success(`${type} successfull at ${officename}`)
+              // toast.success(`${type} successfull at ${officename}`)
             }else{
               toast.error(`You must be in the ${allowedRadius} meters of an office to ${type}`)
             }
@@ -86,10 +86,13 @@ const UserNavbar = () => {
         }
     )
   };
-  const isCheckOutDisable = !hasCheckedOut || hasCheckedOut;
 
   const handleLogout = () => {
+
     localStorage.removeItem("CurrentUser");
+    persistor.purge()
+    localStorage.removeItem("persist:root")
+    store.dispatch({type: "REST_STATE"})
     setCurrentUser(null);
     navigate("/login");
   };
@@ -97,9 +100,7 @@ const UserNavbar = () => {
   return (
     <header className="bg-[#40513B] text-[#EDF1D6] fixed top-0 left-60 right-0 z-10 h-16 ">
       <div className="flex justify-between items-center h-full px-4">
-        {/* Search Input */}
         <div className="flex items-center space-x-2"> </div>
-
         {/* Date, Time, and Icons */}
         <div className="flex items-center space-x-6">
           <div className="hidden md:flex items-center space-x-4">
@@ -120,7 +121,6 @@ const UserNavbar = () => {
               <button
                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-300 transition"
                 onClick={() => handleCheckInOut("check-out")}
-                // disabled = {isCheckOutDisable}
               >
                 Clock-Out
               </button>

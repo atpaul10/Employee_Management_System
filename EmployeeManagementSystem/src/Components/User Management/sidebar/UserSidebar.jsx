@@ -5,6 +5,7 @@ import {
     FaHome,
   } from "react-icons/fa";
   import { Link } from "react-router-dom";
+  import React from "react";
   
   const Sidebar = () => {
     return (
@@ -42,6 +43,31 @@ import {
               >
                 <FaPlusCircle />
                 <span>Leave Request</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* worklogs */}
+          <div className="space-y-2">
+            <button className="flex items-center space-x-2 py-2 text-sm w-full px-2">
+              <FaUsers />
+              <span className="ml-2">Work-Logs</span>
+            </button>
+            <div className="pl-6">
+              <Link
+                to="/worklogs"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-[#609966] rounded-md px-2"
+              >
+                <FaPlusCircle />
+                <span>Daily Work-logs </span>
+              </Link>
+      
+              <Link
+                to="/view-work-logs"
+                className="py-2 text-sm flex items-center space-x-2 hover:bg-[#609966] rounded-md px-2"
+              >
+                <FaPlusCircle />
+                <span>View Work-logs</span>
               </Link>
             </div>
           </div>

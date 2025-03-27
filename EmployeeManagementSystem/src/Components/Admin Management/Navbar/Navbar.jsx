@@ -1,6 +1,7 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-
+import { persistor } from "../../../Redux/store";
 
 const Navbar = () => {
   const [date, setDate] = useState(new Date());
@@ -12,7 +13,9 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = ()=>{
+    persistor.purge()
     localStorage.removeItem("CurrentUser")
+    // window.location.reload()  
     navigate("/login")
   }
 

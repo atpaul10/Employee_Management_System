@@ -1,3 +1,4 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import useGenerateId from "./Hooks/useGenerateId";
@@ -20,11 +21,10 @@ const AddEmployee = () => {
   
 
   const onSubmit = async (data) => {
-  
     try {
       const uniqueId = generateId(data.department);
       const employeeData = { ...data, employeeId: uniqueId };
-      await dispatch(addEmployee(employeeData)).unwrap
+      await dispatch(addEmployee(employeeData)).unwrap()
       toast.success("Employee Detail Added Successfully");
       reset();  
     } catch (error) {
@@ -130,14 +130,19 @@ const AddEmployee = () => {
 
             <div>
               <label className="block font-medium mb-1">Department</label>
-              <input
-                type="text"
+              <select
                 {...register("department", {
                   required: "Department is required",
                 })}
                 className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Department"
-              />
+                defaultValue=""
+              >
+               <option value="" disabled>Select Department </option> 
+               <option value="HR">HR </option> 
+               <option value="Marketing">Marketing</option> 
+               <option value="IT">IT</option> 
+               <option value="Finanace">Finanace </option> 
+              </select>
               {errors.department && (
                 <p className="text-red-600 text-sm">{errors.department.message}</p>
               )}
@@ -239,5 +244,4 @@ const AddEmployee = () => {
     </div>
   );
 };
-
 export default AddEmployee;

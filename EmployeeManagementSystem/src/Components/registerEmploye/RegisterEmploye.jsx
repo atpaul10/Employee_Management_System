@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import React from "react";  
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
