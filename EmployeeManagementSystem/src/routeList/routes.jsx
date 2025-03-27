@@ -26,7 +26,7 @@ const AttendanceManager = React.lazy(()=>import('../Components/User Management/u
 const LeaveRequest = React.lazy(()=> import('../Components/User Management/leaveRequest/LeaveRequest'))
 // import EmployeeLeaveRequest from "../Components/Admin Management/employeeAttedanceMangement/EmployeeLeaveRequest";
 const EmployeeLeaveRequest = React.lazy(()=> import('../Components/Admin Management/employeeAttedanceMangement/EmployeeLeaveRequest'))
-const WorkLogs = React.lazy(()=>import("../Components/User Management/WorkLogs/WorkLogs"))
+const AddWorkLogs = React.lazy(()=>import("../Components/User Management/WorkLogs/AddWorkLogs"))
 const ViewWorkLogs = React.lazy(()=> import("../Components/User Management/WorkLogs/ViewWorkLogs"))
 const EmployeeWorkLogs = React.lazy(()=>import("../Components/Admin Management/employeeWorklogs/EmployeeWorkLogs"))
 
@@ -123,7 +123,7 @@ const routes = [
     path:"/worklogs",
     element:(
       <UserLayout>
-        <WorkLogs/>
+        <AddWorkLogs/>
       </UserLayout>
     )
   },
