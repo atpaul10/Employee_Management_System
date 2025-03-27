@@ -307,9 +307,6 @@ const WorkLogs = () => {
                                 error={touched.tasks?.[index]?.status && !!errors.tasks?.[index]?.status}
                                 helperText={ touched.tasks?.[index]?.status && errors.tasks?.[index]?.status }
                               >
-                                <MenuItem value="" disabled>
-                                  Select Status
-                                </MenuItem>
                                 <MenuItem value="Pending">Pending</MenuItem>
                                 <MenuItem value="In Progress">
                                   In Progress
