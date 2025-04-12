@@ -1,17 +1,20 @@
-import {
-    FaUsers,
-    FaPlusCircle,
-    FaBars,
-    FaHome,
-  } from "react-icons/fa";
-  import { Link } from "react-router-dom";
-  import React from "react";
-  
+import {FaUsers,FaPlusCircle,FaHome,} from "react-icons/fa";
+import { Link } from "react-router-dom";
+import React from "react";
+import OptraLogo1 from "../../../../public/OptraLogo1.png"
+
   const Sidebar = () => {
     return (
       <div className="bg-[#40513B] text-white h-screen w-60 fixed top-0 left-0 overflow-y-auto z-20">
         <div className="p-4 flex">
-          <FaBars className="text-white text-xl cursor-pointer" />
+          <Link to="/userdashboard">
+          <img
+            src={OptraLogo1}
+            alt="Optra logo"
+            className="h-13 w-auto"
+          />
+
+          </Link>
         </div>
         <div className="space-y-1 px-4">
           <Link
@@ -59,7 +62,7 @@ import {
                 className="py-2 text-sm flex items-center space-x-2 hover:bg-[#609966] rounded-md px-2"
               >
                 <FaPlusCircle />
-                <span>Daily Work-logs </span>
+                <span>Add Work-logs </span>
               </Link>
       
               <Link
@@ -75,6 +78,4 @@ import {
       </div>
     );
   };
-  
   export default Sidebar;
-  

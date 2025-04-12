@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaUsers, FaCalendarAlt, FaClipboardList, FaPlusCircle, FaHome, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { LuLogs } from "react-icons/lu";
 import { MdOutlinePreview } from "react-icons/md";
+import OptraLogo from "../../../../public/OptraLogo.png"
 
 const Sidebar = () => {
 
@@ -14,15 +15,23 @@ const Sidebar = () => {
   const toggleSection = (section) => {
     setOpenSections((prev) => ({
       ...prev,
-      [section]: !prev[section] ?? false, 
+      [section]: !prev[section] , 
     }));  
   };
 
   return (
     <div className="bg-indigo-950 text-white h-screen w-60 fixed top-0 left-0 overflow-y-auto z-20">
       <div className="p-4 flex items-center justify-center">
+
         <div className="text-white text-xl cursor-pointer"></div>
-      </div>
+        <Link to='/admindashboard'>
+        <img
+          src={OptraLogo}
+          alt="Optra logo"
+          className="h-15 w-auto"
+        />
+        </Link>
+        </div>
 
       <div className="space-y-6 px-4">
         {/* Dashboard */}
@@ -89,7 +98,7 @@ const Sidebar = () => {
                 <FaCalendarAlt />
                 <span>Employee Attendance Management</span>
               </Link>
-              <Link
+            <Link
                 to="/leave-request-management"
                 className="py-2 text-sm flex items-center space-x-2 hover:bg-indigo-800 rounded-md px-2 transition-all duration-200"
               >

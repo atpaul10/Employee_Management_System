@@ -1,11 +1,16 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {deleteEmployee,editEmployee,fetchEmployees} from "../../../Redux/employeeSlice";
-import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { deleteEmployee, editEmployee, fetchEmployees } from "../../../Redux/employeeSlice";
 import { toast } from "react-toastify";
-import  Pagination  from "@mui/material/Pagination";
-import { Stack } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, Box, Typography, Button, Modal, Pagination, Stack,Slide, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions }from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+const Transiton = React.forwardRef(function Transiton(props, ref){
+  return <Slide direction="up" ref={ref}{...props}/>
+})
 
 const EmployeeDirectory = () => {
   const employees = useSelector((state) => state.employee.employees || []);
@@ -13,12 +18,13 @@ const EmployeeDirectory = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState(null);
+  const [originalEmployee, setOrginalEmployee]= useState(null)
   const [viewEmployee, setViewEmployee] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterCategory, setFilterCategory] = useState("employeeId");
-
-  const [page , setpage] = useState(1)
-  const rowPerPage = 5
+  const [page, setPage] = useState(1);
+  const rowPerPage = 5;
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+   const [employeeToDelete, setEmployeeToDelete] = useState(null);
 
   useEffect(() => {
     document.title = "Employee Directory";
@@ -27,20 +33,35 @@ const EmployeeDirectory = () => {
     });
   }, [dispatch]);
 
-  const handleDelete = (id) => {
+  const handleDeleteClick = (id)=>{
     console.log("Deleting the emp with Firestore document ID:", id);
-    dispatch(deleteEmployee(id))
-      .unwrap()
-      .then(() => {
-        console.log("Employee deleted successfully");
-      })
-      .catch((error) => {
-        console.error("Error deleting employee:", error);
-      });
-  };
-
+    setEmployeeToDelete(id)
+    setDeleteDialogOpen(true)
+  }
+  const handleDeleteConfirm = () => {
+    console.log("Deleting the emp with Firestore document ID:", employeeToDelete);
+    if(employeeToDelete){
+      dispatch(deleteEmployee(employeeToDelete))
+        .unwrap()
+        .then(() => {
+          console.log("Employee deleted successfully");
+          toast.success("Employee deleted successfully")
+        })
+        .catch((error) => {
+          console.error("Error deleting employee:", error);
+        }).finally(()=>{
+          setDeleteDialogOpen(false)
+          setEmployeeToDelete(null)
+        })
+    };
+    }
+  const handleDeleteCancel = ()=>{
+    setDeleteDialogOpen(false)
+    setEmployeeToDelete(null)
+  }
   const handleEdit = (employee) => {
-    setCurrentEmployee(employee);
+    setCurrentEmployee({...employee});
+    setOrginalEmployee({...employee})
     setIsEditing(true);
   };
 
@@ -49,7 +70,7 @@ const EmployeeDirectory = () => {
     dispatch(editEmployee(currentEmployee))
       .unwrap()
       .then(() => {
-        toast.success("Employee Update Successfully")
+        toast.success("Employee Update Successfully");
         setIsEditing(false);
       })
       .catch((error) => {
@@ -61,325 +82,243 @@ const EmployeeDirectory = () => {
     setViewEmployee(employee);
   };
 
-  const handleChnangePage = ( event,newPage)=>{
-    setpage(newPage)
-  }
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+
   const filteredEmployees = employees.filter((employee) => {
     if (!searchQuery) return true;
-    return employee[filterCategory]
-      ?.toString()
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
+    const query = searchQuery.toLowerCase();
+    return(
+      employee.employeeId?.toString().toLowerCase().includes(query) ||
+      employee.fullName?.toLowerCase().includes(query) ||
+      employee.email?.toLowerCase().includes(query) ||
+      employee.department?.toLowerCase().includes(query) ||
+      employee.bloodGroup?.toLowerCase().includes(query) || 
+      employee.jobTitle?.toLowerCase().includes(query) 
+    )
   });
 
-  const calaculateExperience = (dateOfJoining) => {
+  const calculateExperience = (dateOfJoining) => {
     const today = new Date();
     const joiningDate = new Date(dateOfJoining);
     const years = today.getFullYear() - joiningDate.getFullYear();
     const months = today.getMonth() - joiningDate.getMonth();
-    return `${years} Years ${months < 0 ? 12 + months : months} Months `;
+    return `${years} Years ${months < 0 ? 12 + months : months} Months`;
   };
 
-const paginationEmployeee = filteredEmployees.slice((page - 1) * rowPerPage , page * rowPerPage)
+  const paginatedEmployees = filteredEmployees.slice((page - 1) * rowPerPage, page * rowPerPage);
+
+  const hasChanges = ()=>{
+    if (!currentEmployee || !originalEmployee) return false;
+    return (
+      currentEmployee.fullName !== originalEmployee.fullName ||
+      currentEmployee.address !== originalEmployee.address ||
+      currentEmployee.phone !== originalEmployee.phone ||
+      currentEmployee.email !== originalEmployee.email ||
+      currentEmployee.dateOfJoining !== originalEmployee.dateOfJoining ||
+      currentEmployee.dateOfBirth !== originalEmployee.dateOfBirth ||
+      currentEmployee.jobTitle !== originalEmployee.jobTitle
+    );
+  }
+
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    maxHeight: '90vh',
+    overflowY: 'auto'
+  };
 
   return (
-    <>
-      <div className="p-6 ">
-        <h2 className="text-lg font-semibold mb-4">Employee Directory</h2>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" gutterBottom>
+        Employee Directory
+      </Typography>
 
-        <div className="mb-4 flex gap -4">
-          <select
-            className="px-3 py-2 border-rounded"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="employeeId">Employee Id</option>
-            <option value="fullName">Full Name</option>
-            <option value="department">Department</option>
-            <option value="bloodGroup">Blood Group</option>
-          </select>
-          <input
-            type="text"
-            className="w-96  px-3  border py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            placeholder="Search For Employee"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        {paginationEmployeee.length === 0 ? (
-          <p className="text-gray-500">
-            No Employee Matchs for the Search criteria
-          </p>
-        ) : (
-          <table className="w-full bg-white rounded-lg overflow-hidden">
-            <thead>
-              <tr className="bg-indigo-900 text-white">
-                <th className="p-2 text-left">Employee ID</th>
-                <th className="p-2 text-left">Full Name</th>
-                <th className="p-2 text-left">Address</th>
-                <th className="p-2 text-left">Phone</th>
-                <th className="p-2 text-left">Email</th>
-                <th className="p-2 text-left">Date of Joining</th>
-                <th className="p-2 text-left">Date of Birth</th>
-                <th className="p-2 text-left">Job Title</th>
-                <th className="p-2 text-left">Department</th>
-                <th className="p-2 text-left">Experience</th>
-                <th className="p-2 text-left">Blood Group</th>
-                <th className="p-2 text-left">Emergency Contact</th>
-                <th className="p-2 text-left">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginationEmployeee.map((employee) => (
-                <tr key={employee.id} className="border-b hover:bg-gray-50">
-                  <td className="p-2">{employee.employeeId}</td>
-                  <td className="p-2">{employee.fullName}</td>
-                  <td className="p-2">{employee.address}</td>
-                  <td className="p-2">{employee.phone}</td>
-                  <td className="p-2">{employee.email}</td>
-                  <td className="p-2">{employee.dateOfJoining}</td>
-                  <td className="p-2">{employee.dateOfBirth}</td>
-                  <td className="p-2">{employee.jobTitle}</td>
-                  <td className="p-2">{employee.department}</td>
-                  <td className="p-2">
-                    {calaculateExperience(employee.dateOfJoining)}
-                  </td>
-                  <td className="p-2">{employee.bloodGroup}</td>
-                  <td className="p-2">
-                    {employee.emergencyName} ({employee.emergencyNumber})
-                  </td>
-                  <td className="p-2 flex justify-center gap-2">
-                    <FaEye
-                      className="text-blue-500 cursor-pointer"
-                      title="View"
-                      onClick={() => handleView(employee)}
-                    />
-                    <FaEdit
-                      className="text-green-500 cursor-pointer"
-                      title="Edit"
-                      onClick={() => handleEdit(employee)}
-                    />
-                    <FaTrash
-                      className="text-red-700 cursor-pointer"
-                      title="Delete"
-                      onClick={() => handleDelete(employee.id)}
-                    />
-                  </td>
-                </tr>
+      <Box sx={{ mb: 5, display: 'flex', gap: 2 }}>
+        <TextField
+          label="Search"
+          variant="standard"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ width: 400 }}
+        />
+      </Box>
+
+      {paginatedEmployees.length === 0 ? (
+        <Typography color="text.secondary">
+          No Employee Matches for the Search criteria
+        </Typography>
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow sx={{ bgcolor: 'primary.dark' }}>
+                {[
+                  "Employee ID", "Full Name", "Address", "Phone", "Email",
+                  "Date of Joining", "Date of Birth", "Job Title", "Department",
+                  "Experience", "Blood Group", "Emergency Contact", "Action"
+                ].map((header) => (
+                  <TableCell key={header} sx={{ color: 'white' }}>
+                    {header}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedEmployees.map((employee) => (
+                <TableRow key={employee.id} hover>
+                  <TableCell>{employee.employeeId}</TableCell>
+                  <TableCell>{employee.fullName}</TableCell>
+                  <TableCell>{employee.address}</TableCell>
+                  <TableCell>{employee.phone}</TableCell>
+                  <TableCell>{employee.email}</TableCell>
+                  <TableCell>{formatDate(employee.dateOfJoining)}</TableCell>
+                  <TableCell>{formatDate(employee.dateOfBirth)}</TableCell>
+                  <TableCell>{employee.jobTitle}</TableCell>
+                  <TableCell>{employee.department}</TableCell>
+                  <TableCell>{calculateExperience(employee.dateOfJoining)}</TableCell>
+                  <TableCell>{employee.bloodGroup}</TableCell>
+                  <TableCell>{`${employee.emergencyName} (${employee.emergencyNumber})`}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleView(employee)} color="primary">
+                      <VisibilityIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleEdit(employee)} color="success">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteClick(employee.id)} color="error">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-          <div className="flex justify-center mt-4">
-            <Stack spacing={2}>
-              <Pagination
-              count={Math.ceil(filteredEmployees.length / rowPerPage)}
-              page={page}
-              onChange={handleChnangePage}
-              color="primary"
-              >
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <Stack spacing={2}>
+          <Pagination
+            count={Math.ceil(filteredEmployees.length / rowPerPage)}
+            page={page}
+            onChange={handleChangePage}
+            color="primary"
+          />
+        </Stack>
+      </Box>
 
-              </Pagination>
-            </Stack>
+      <Modal open={isEditing} onClose={() => setIsEditing(false)}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Edit Employee
+          </Typography>
+          <form onSubmit={handleUpdate}>
+            {[
+              { label: "Full Name", field: "fullName", type: "text" },
+              { label: "Address", field: "address", type: "text" },
+              { label: "Phone Number", field: "phone", type: "text" },
+              { label: "Email", field: "email", type: "email" },
+              { label: "Date Of Joining", field: "dateOfJoining", type: "date" },
+              { label: "Date Of Birth", field: "dateOfBirth", type: "date" },
+              { label: "Job Title", field: "jobTitle", type: "text" },
+            ].map(({ label, field, type }) => (
+              <TextField
+                key={field}
+                label={label}
+                type={type}
+                value={currentEmployee?.[field] || ""}
+                onChange={(e) =>
+                  setCurrentEmployee({
+                    ...currentEmployee,
+                    [field]: e.target.value,
+                  })
+                }
+                fullWidth
+                margin="normal"
+                variant="outlined"
+              />
+            ))}
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button onClick={() => setIsEditing(false)} variant="outlined">
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" color="primary" disabled={!hasChanges()}>
+                Update
+              </Button>
+            </Box>
+          </form>
+        </Box>
+      </Modal>
 
-          </div>
-        {isEditing && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg p-6 w-96 max-h-[90vh] overflow-y-auto">
-              <h3 className="text-lg font-semibold mb-4">Edit Employee</h3>
+      <Modal open={!!viewEmployee} onClose={() => setViewEmployee(null)}>
+        <Box sx={{ ...modalStyle, width: 500 }}>
+          <Typography variant="h6" gutterBottom>
+            Employee Detail
+          </Typography>
+          {viewEmployee && (
+            <Box>
+              {[
+                ["Employee ID", viewEmployee.employeeId],
+                ["Full Name", viewEmployee.fullName],
+                ["Address", viewEmployee.address],
+                ["Phone", viewEmployee.phone],
+                ["Email", viewEmployee.email],
+                ["Job Title", viewEmployee.jobTitle],
+                ["Date of Joining",formatDate(viewEmployee.dateOfJoining)],
+                ["Date of Birth", formatDate(viewEmployee.dateOfBirth)],
+                ["Department", viewEmployee.department],
+                ["Blood Group", viewEmployee.bloodGroup],
+                ["Emergency Contact", `${viewEmployee.emergencyName} ${viewEmployee.emergencyNumber}`],
+              ].map(([label, value]) => (
+                <Typography key={label} sx={{ mb: 1 }}>
+                  <strong>{label}: </strong> {value}
+                </Typography>
+              ))}
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                <Button onClick={() => setViewEmployee(null)} variant="outlined">
+                  Close
+                </Button>
+              </Box>
+            </Box>
+          )}
+        </Box>
+      </Modal> 
+      <Dialog open = {deleteDialogOpen} TransitionComponent={Transiton} keepMounted onClose={handleDeleteCancel} aria-describedby="alert-dialog-slide-description">
+        <DialogTitle>{"Confirm Deletion"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id = "alert-dialog-slide-decription">
+              Are you sure want to delete this employee?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error">
+            Delete
+          </Button>
+        </DialogActions>
 
-              <form onSubmit={handleUpdate}>
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    value={currentEmployee.fullName}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        fullName: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    value={currentEmployee.address}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        address: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Phone Number
-                  </label>
-                  <input
-                    type="text"
-                    value={currentEmployee.phone}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        phone: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={currentEmployee.email}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        email: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                {/* dateOfJoining  */}
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Date Of Joining
-                  </label>
-                  <input
-                    type="date"
-                    value={currentEmployee.dateOfJoining}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        dateOfJoining: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                {/* dateOfBirth  */}
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Date Of Birth
-                  </label>
-                  <input
-                    type="date"
-                    value={currentEmployee.dateOfBirth}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        dateOfJBirth: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                {/* jobTitle  */}
-                <div className="mb-4">
-                  <label className="block mb-1 text-sm font-medium">
-                    Job Title
-                  </label>
-                  <input
-                    type="text"
-                    value={currentEmployee.jobTitle}
-                    onChange={(e) =>
-                      setCurrentEmployee({
-                        ...currentEmployee,
-                        jobTitle: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border rounded"
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 bg-gray-300 rounded"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 text-white rounded  hover:bg-indigo-700"
-                  >
-                    Update
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-        {viewEmployee && (
-          <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white rounded-lg p-6 w-1/3">
-              <h3 className="text-lg font-semibold mb-4">Employee Detail</h3>
-              <div className="mb-4">
-                <p>
-                  <strong>Employee ID: </strong> {viewEmployee.employeeId}
-                </p>
-                <p>
-                  <strong>Full Name: </strong> {viewEmployee.fullName}
-                </p>
-                <p>
-                  <strong>Address: </strong> {viewEmployee.address}
-                </p>
-                <p>
-                  <strong>Phone: </strong> {viewEmployee.phone}
-                </p>
-                <p>
-                  <strong>Email: </strong> {viewEmployee.email}
-                </p>
-                <p>
-                  <strong>Job Title: </strong> {viewEmployee.jobTitle}
-                </p>
-                <p>
-                  <strong>Date of Joining: </strong>{" "}
-                  {viewEmployee.dateOfJoining}
-                </p>
-                <p>
-                  <strong>Date of Birth: </strong> {viewEmployee.dateOfBirth}
-                </p>
-                <p>
-                  <strong>Department: </strong> {viewEmployee.department}
-                </p>
-                <p>
-                  <strong>Blood Group: </strong> {viewEmployee.bloodGroup}
-                </p>
-                <p>
-                  <strong>Emergency Contact: </strong>{" "}
-                  {viewEmployee.emergencyName} {viewEmployee.emergencyNumber}
-                </p>
-              </div>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="submit"
-                  onClick={() => setViewEmployee(null)}
-                  className="px-4 py-2 bg-grey-300 rounded"
-                >
-                  {" "}
-                  close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+      </Dialog>
+    </Box>
   );
 };
+
 export default EmployeeDirectory;

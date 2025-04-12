@@ -28,7 +28,7 @@ export const checkInOut = createAsyncThunk(
         const existingData = querySnapshot.docs[0].data();
 
         if (type === "check-in") {
-          toast.error("Clock-In already recorded for toady.")
+          // toast.error("Clock-In already recorded for toady.")
           return;
         }
         if (type === "check-out") {
@@ -37,7 +37,7 @@ export const checkInOut = createAsyncThunk(
             return;
           }
           await setDoc(checkinDocRef, { checkOut: serverTimestamp() }, { merge: true });
-          toast.success("Clock-Out recorded Successfully")
+          // toast.success("Clock-Out recorded Successfully")
           dispatch(setHasCheckedIn(false))
           dispatch(setHasCheckedOut(true))
         }

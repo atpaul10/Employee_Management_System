@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
+import OptraLogo from '../../../public/OptraLogo2.png'
 
 
 //* Login Component using React Hook Form
@@ -63,10 +64,10 @@ const LoginComponent = () => {
         } else {
           toast.error("Invalid role selected");
         }
-  
-        toast.success("Login Successful");
+        setTimeout(()=>toast.success("Login Successful"),1000)
+        // toast.success("Login Successful");
       } else {
-        toast.error("User data not found in Firestore.");
+        toast.error("User data not found ");
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -81,8 +82,17 @@ const LoginComponent = () => {
       <div className="flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-sm bg-white rounded-lg shadow-md p-8">
           <h2 className="text-2xl font-bold text-center text-indigo-950 mb-6 ">
-            Sign in to your account
+            Login
           </h2>
+          <div className="flex justify-center mb-6">
+            <img 
+            src={OptraLogo}
+            alt="Optra Logo"
+            className="h-12"
+            />
+          
+
+          </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               {/* name  */}
@@ -90,7 +100,7 @@ const LoginComponent = () => {
                 type="text"
                 {...register("name", { required: "Name is required" })}
                 placeholder="Name"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
                   errors.name ? "border-red-500" : "border-gray-300"
                 }`}
               />
@@ -169,16 +179,16 @@ const LoginComponent = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 mt-4"
+              className="w-full bg-indigo-900 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 mt-4"
             >
-              Login
+              Login to your account
             </button>
           </form>
           <p className="text-sm text-gray-600 text-center mt-4">
             Do not have an account?{" "}
             <span
               onClick={() => navigate("/register")}
-              className="text-indigo-600 cursor-pointer hover:underline"
+              className="text-indigo-950 cursor-pointer hover:underline"
             >
               Register here
             </span>

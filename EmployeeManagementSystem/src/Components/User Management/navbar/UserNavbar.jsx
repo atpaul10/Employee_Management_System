@@ -1,16 +1,23 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { checkInOut,} from "../../../Redux/attendanceSlice";
+import { checkInOut, setLoading,} from "../../../Redux/attendanceSlice";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import React from "react";
 import { persistor,store } from "../../../Redux/store";
+import { db } from "../../../firebase";
+import { getDoc,doc } from "firebase/firestore";
+import dayjs from "dayjs";
+// import Brightness4Icon from '@mui/icons-material/Brightness4';
+// import Brightness7Icon from '@mui/icons-material/Brightness7';
+// import {toggleTheme} from "../../../Redux/themeSlice"
+// import { FormControlLabel, Switch } from "@mui/material";
 
 
 const UserNavbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  // const {mode} = useSelector((state)=>state.theme)
 
   const officeLocation = [
     {id:1, name:"Head Office",lat:22.3018644912575, lng:73.13965197117078},
@@ -48,17 +55,29 @@ const UserNavbar = () => {
     return R * c * 1000
   };
 
-  const { hasCheckedIn, hasCheckedOut } = useSelector(
-    (state) => state.attendance
-  );
+  const { hasCheckedIn, hasCheckedOut } = useSelector((state) => state.attendance );
+
+  const checkWorkLog = async()=>{
+    if(! currentUser) return false
+    try {
+      const today = dayjs().format("YYYY-MM-DD")
+      const workLogRef = doc(db,"users",currentUser.uid,"workLogs",today)
+      const docSnap = await getDoc(workLogRef)
+      return docSnap.exists()
+    } catch (error) {
+        console.log("Error in checking Work Log ",error)
+        toast.error("Failed to verify work log")
+        return false
+    }
+  }
   const handleCheckInOut = (type) => {
-    if (!currentUser) {
+    if (!currentUser ) {
       console.log("No user is logged");
       return;
     }
-
+    setLoading(true)
     navigator.geolocation.getCurrentPosition(
-        (postion)=>{
+      async  (postion)=>{
           const{latitude,longitude}= postion.coords
           console.log(postion);
           
@@ -74,10 +93,19 @@ const UserNavbar = () => {
             }
           } 
             if(iswithOffice){
-             dispatch(checkInOut({ type, currentUser }));
-              // toast.success(`${type} successfull at ${officename}`)
+              if(type ==="check-out"){
+
+                const hasWorkLog = await checkWorkLog()
+                if(!hasWorkLog){
+                  toast.warn("Today's work log has not been added! Please add it before clocking out")
+                  navigate("/worklogs")
+                  return 
+                }
+              }
+              dispatch(checkInOut({type,currentUser})).unwrap()
+               toast.success(`${type === "check-in" ? "Checked in" : "Checked out"} successfully at ${officename}`);
             }else{
-              toast.error(`You must be in the ${allowedRadius} meters of an office to ${type}`)
+              toast.error(`You must be within ${allowedRadius} meters of an office to ${type}`);
             }
         },
         (error)=>{
@@ -88,14 +116,16 @@ const UserNavbar = () => {
   };
 
   const handleLogout = () => {
-
     localStorage.removeItem("CurrentUser");
     persistor.purge()
     localStorage.removeItem("persist:root")
-    store.dispatch({type: "REST_STATE"})
+    store.dispatch({type: "RESET_STATE"})
     setCurrentUser(null);
     navigate("/login");
   };
+  // const handleToggleTheme = ()=>{
+  //   dispatch(toggleTheme())
+  // }
 
   return (
     <header className="bg-[#40513B] text-[#EDF1D6] fixed top-0 left-60 right-0 z-10 h-16 ">
@@ -108,7 +138,17 @@ const UserNavbar = () => {
             <span>{date.toLocaleTimeString()}</span>
           </div>
           <div className="flex items-center space-x-4"> </div>
-
+            {/* <FormControlLabel
+                control={
+                  <Switch
+                    checked = {mode === 'dark'}
+                    onChange={handleToggleTheme}
+                    icon = {<Brightness7Icon/>}
+                    checkedIcon = {<Brightness4Icon/>}
+                    color="default"
+                  />
+                }
+            /> */}
           <div>
             {!hasCheckedIn ? (
               <button

@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 function App() {
   return (
     <Router>
-      <ToastContainer position="top-right"/>
+      <ToastContainer position="top-center"/>
       <Suspense fallback={<div><CircularProgress style={{alignItems:"center"}}/></div>}>
       <Routes>
         <Route path="/" element={<Navigate to= "/login"/>}/>

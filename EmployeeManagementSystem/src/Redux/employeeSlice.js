@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {db} from "../firebase"
 import { collection,addDoc,updateDoc,deleteDoc,doc, getDocs } from 'firebase/firestore';
 
-
-
 //feteching data from the firebase
  export const fetchEmployees = createAsyncThunk(
   "employeeDetails/fetchEmployees",

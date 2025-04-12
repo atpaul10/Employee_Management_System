@@ -14,7 +14,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { calculateLeaveDays } from "../../../utils/CalculateLeavesDays";
 
-
 const LeaveSchema = Yup.object().shape({
   leaveType: Yup.string().required("Leave Type is required"),
   startDate: Yup.date()      
@@ -80,7 +79,7 @@ const LeaveRequest = () => {
     dispatch(addLeaveRequest({ userId: currentUser.uid, leaveData }))
       .unwrap()
       .then(() => {
-        toast.success("Leave Request Successfully");
+        toast.success("Leave request sent successfully");
         setPreviewOpen(false);
         resetForm();
         dispatch(fetchLeaveRequests(currentUser.uid));
@@ -124,7 +123,6 @@ const LeaveRequest = () => {
         Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
         true
       );
-  
       if (Object.keys(errors).length === 0) {
         setPreviewData(values);
         setPreviewOpen(true);
@@ -296,10 +294,10 @@ const LeaveHistoryTable = ({ leaveRequests }) => {
   const currentUser = JSON.parse(localStorage.getItem("CurrentUser"))
 
   const handleCancelLeave = async(leave)=>{
-    if(!currentUser){
-      toast.error("You Must login to Cancel the leave")
-      return;
-    }
+    // if(!currentUser){
+    //   toast.error("You Must login to Cancel the leave")
+    //   return;
+    // }
     const confirmCancel = window.confirm("Are you sure to want to cancel this leave request")
     if(!confirmCancel)return
 

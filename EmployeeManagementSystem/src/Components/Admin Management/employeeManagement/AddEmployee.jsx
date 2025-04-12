@@ -1,83 +1,102 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import useGenerateId from "./Hooks/useGenerateId";
 import { addEmployee } from "../../../Redux/employeeSlice";
-import {useEffect} from "react";
-import {toast} from "react-toastify" 
+import { toast } from "react-toastify";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
 const AddEmployee = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset
-  } = useForm();
+    reset,
+    control,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      fullName: "",
+      address: "",
+      phone: "",
+      email: "",
+      jobTitle: "",
+      department: "",
+      bloodGroup: "",
+      dateOfJoining: "",
+      dateOfBirth: "",
+      emergencyName: "",
+      emergencyNumber: "",
+    },
+  });
 
-   useEffect(() => {document.title = "Add Employee"})
+  useEffect(() => {
+    document.title = "Add Employee";
+  }, []);
 
   const dispatch = useDispatch();
   const generateId = useGenerateId();
-  
 
   const onSubmit = async (data) => {
     try {
       const uniqueId = generateId(data.department);
       const employeeData = { ...data, employeeId: uniqueId };
-      await dispatch(addEmployee(employeeData)).unwrap()
+      await dispatch(addEmployee(employeeData)).unwrap();
       toast.success("Employee Detail Added Successfully");
-      reset();  
+      reset(); // This will reset all fields to their defaultValues
     } catch (error) {
       console.log("Error in adding data", error);
       toast.error("Failure");
     }
-  };  
+  };
+
   return (
-    <div className="flex justify-center items-center h-full ">
-      <div className="w-full max-w-4xl p-8 bg-white rounded-lg">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Box sx={{ p: 4, borderRadius: 2 }}>
+        <Typography variant="h5" align="center" gutterBottom>
           Add Employee
-        </h2>
+        </Typography>
 
-        <form
-          className="space-y-6"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {/* Full Name and Address */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-medium mb-1">Full Name</label>
-              <input
-                type="text"
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={3}>
+            {/* Full Name and Address */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Full Name"
                 {...register("fullName", { required: "Full Name is required" })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Full Name"
+                error={!!errors.fullName}
+                helperText={errors.fullName?.message}
+                variant="outlined"
               />
-              {errors.fullName && (
-                <p className="text-red-600 text-sm">{errors.fullName.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Address</label>
-              <input
-                type="text"
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Address"
                 {...register("address", { required: "Address is required" })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Address"
+                error={!!errors.address}
+                helperText={errors.address?.message}
+                variant="outlined"
               />
-              {errors.address && (
-                <p className="text-red-600 text-sm">{errors.address.message}</p>
-              )}
-            </div>
-          </div>
+            </Grid>
 
-          {/* Phone and Email */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-medium mb-1">Phone</label>
-              <input
-                type="text"
+            {/* Phone and Email */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Phone"
                 {...register("phone", {
                   required: "Phone is required",
                   pattern: {
@@ -85,17 +104,15 @@ const AddEmployee = () => {
                     message: "Enter a valid 10-digit phone number",
                   },
                 })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Phone Number"
+                error={!!errors.phone}
+                helperText={errors.phone?.message}
+                variant="outlined"
               />
-              {errors.phone && (
-                <p className="text-red-600 text-sm">{errors.phone.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Email</label>
-              <input
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Email"
                 type="email"
                 {...register("email", {
                   required: "Email is required",
@@ -104,144 +121,140 @@ const AddEmployee = () => {
                     message: "Enter a valid email address",
                   },
                 })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Email"
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                variant="outlined"
               />
-              {errors.email && (
-                <p className="text-red-600 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-          </div>
+            </Grid>
 
-          {/* Job Title and Department */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-medium mb-1">Job Title</label>
-              <input
-                type="text"
+            {/* Job Title and Department */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Job Title"
                 {...register("jobTitle", { required: "Job Title is required" })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Job Title"
+                error={!!errors.jobTitle}
+                helperText={errors.jobTitle?.message}
+                variant="outlined"
               />
-              {errors.jobTitle && (
-                <p className="text-red-600 text-sm">{errors.jobTitle.message}</p>
-              )}
-            </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <FormControl fullWidth variant="outlined" error={!!errors.department}>
+                <InputLabel>Department</InputLabel>
+                <Controller
+                  name="department"
+                  control={control}
+                  rules={{ required: "Department is required" }}
+                  render={({ field }) => (
+                    <Select {...field} label="Department">
+                      <MenuItem value="" disabled>
+                        Select Department
+                      </MenuItem>
+                      <MenuItem value="HR">HR</MenuItem>
+                      <MenuItem value="Marketing">Marketing</MenuItem>
+                      <MenuItem value="IT">IT</MenuItem>
+                      <MenuItem value="Finance">Finance</MenuItem>
+                    </Select>
+                  )}
+                />
+                {errors.department && (
+                  <Typography color="error" variant="caption">
+                    {errors.department.message}
+                  </Typography>
+                )}
+              </FormControl>
+            </Grid>
 
-            <div>
-              <label className="block font-medium mb-1">Department</label>
-              <select
-                {...register("department", {
-                  required: "Department is required",
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                defaultValue=""
+            {/* Blood Group and Date of Joining */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Blood Group"
+                {...register("bloodGroup", { required: "Blood Group is required" })}
+                error={!!errors.bloodGroup}
+                helperText={errors.bloodGroup?.message}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Date of Joining"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                {...register("dateOfJoining", { required: "Date of Joining is required" })}
+                error={!!errors.dateOfJoining}
+                helperText={errors.dateOfJoining?.message}
+                variant="outlined"
+              />
+            </Grid>
+
+            {/* Date of Birth */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                label="Date of Birth"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                {...register("dateOfBirth", { required: "Date of Birth is required" })}
+                error={!!errors.dateOfBirth}
+                helperText={errors.dateOfBirth?.message}
+                variant="outlined"
+              />
+            </Grid>
+
+            {/* Emergency Contact */}
+            <Grid item xs={12}>
+              <Typography variant="h6" gutterBottom>
+                Emergency Contact
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    {...register("emergencyName", { required: "Emergency Name is required" })}
+                    error={!!errors.emergencyName}
+                    helperText={errors.emergencyName?.message}
+                    variant="outlined"
+                  />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField
+                    fullWidth
+                    label="Phone Number"
+                    {...register("emergencyNumber", {
+                      required: "Emergency Phone Number is required",
+                      pattern: {
+                        value: /^[0-9]{10}$/,
+                        message: "Enter a valid 10-digit phone number",
+                      },
+                    })}
+                    error={!!errors.emergencyNumber}
+                    helperText={errors.emergencyNumber?.message}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+
+            {/* Submit Button */}
+            <Grid item xs={12}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ py: 1.5 }}
               >
-               <option value="" disabled>Select Department </option> 
-               <option value="HR">HR </option> 
-               <option value="Marketing">Marketing</option> 
-               <option value="IT">IT</option> 
-               <option value="Finanace">Finanace </option> 
-              </select>
-              {errors.department && (
-                <p className="text-red-600 text-sm">{errors.department.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Blood Group and Date of Joining */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block font-medium mb-1">Blood Group</label>
-              <input
-                type="text"
-                {...register("bloodGroup", {
-                  required: "Blood Group is required",
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Blood Group"
-              />
-              {errors.bloodGroup && (
-                <p className="text-red-600 text-sm">{errors.bloodGroup.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Date of Joining</label>
-              <input
-                type="date"
-                {...register("dateOfJoining", {
-                  required: "Date of Joining is required",
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              {errors.dateOfJoining && (
-                <p className="text-red-600 text-sm">{errors.dateOfJoining.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block font-medium mb-1">Date of Birth</label>
-              <input
-                type="date"
-                {...register("dateOfBirth", {
-                  required: "Date of Birth is required",
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              {errors.dateOfJoining && (
-                <p className="text-red-600 text-sm">{errors.dateOfBirth.message}</p>
-              )}
-            </div>
-
-
-          </div>
-
-          {/* Emergency Contact */}
-          <div>
-            <h3 className="font-medium mb-2">Emergency Contact</h3>
-            <div>
-              <label className="block font-medium mb-1">Name</label>
-              <input
-                type="text"
-                {...register("emergencyName", {
-                  required: "Emergency Name is required",
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Emergency Contact Name"
-              />
-              {errors.emergencyName && (
-                <p className="text-red-600 text-sm">{errors.emergencyName.message}</p>
-              )}
-
-              <label className="block font-medium mt-4 mb-1">Phone Number</label>
-              <input
-                type="text"
-                {...register("emergencyNumber", {
-                  required: "Emergency Phone Number is required",
-                  pattern: {
-                    value: /^[0-9]{10}$/,
-                    message: "Enter a valid 10-digit phone number",
-                  },
-                })}
-                className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter Emergency Contact Number"
-              />
-              {errors.emergencyNumber && (
-                <p className="text-red-600 text-sm">{errors.emergencyNumber.message}</p>
-              )}
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="bg-indigo-600 text-white w-full py-3 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-         >
-            Add Employee
-          </button>
+                Add Employee
+              </Button>
+            </Grid>
+          </Grid>
         </form>
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 };
+
 export default AddEmployee;

@@ -1,4 +1,3 @@
-import { elements } from "chart.js";
 import React from "react";
 // import LoginComponent from "../Components/loginEmplove/LoginComponent";
 const LoginComponent = React.lazy(()=> import('../Components/loginEmplove/LoginComponent'))
@@ -125,7 +124,8 @@ const routes = [
       <UserLayout>
         <AddWorkLogs/>
       </UserLayout>
-    )
+    ),
+    role:"User"
   },
   {
     path:"/view-work-logs",
@@ -133,7 +133,8 @@ const routes = [
       <UserLayout>
         <ViewWorkLogs/>
       </UserLayout>
-    )
+    ),
+    role:"User"
   },
   {
     path:"/employee-worklogs",
@@ -141,7 +142,8 @@ const routes = [
       <Layout>
         <EmployeeWorkLogs/>
       </Layout>
-    )
+    ),
+    role:"Admin"
   }
 ];
 export default routes;

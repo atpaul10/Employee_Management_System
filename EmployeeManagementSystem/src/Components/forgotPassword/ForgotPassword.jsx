@@ -80,11 +80,14 @@ function ForgotPassword() {
             </form>
 
             {/* Back to Login */}
-            <p
-              onClick={() => navigate("/login")}
-              className="text-sm text-indigo-600 text-center mt-4 cursor-pointer hover:underline"
-            >
-              Back to Login
+            <p className="text-sm text-indigo-600 text-center mt-4">
+              <span className="text-indigo-950">Remember your password? </span>
+              <span
+                onClick={() => navigate("/login")}
+                className="cursor-pointer hover:underline"
+              >
+                Login
+              </span>
             </p>
           </div>
         </div>

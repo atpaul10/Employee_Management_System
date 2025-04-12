@@ -5,12 +5,14 @@ import employeeReducer from "./employeeSlice"
 import attendanceReducer from './attendanceSlice'
 import leaveReducer from './leaveSlice'
 import workLogsReducer from './workLogsSlice'
+import themeReducer from './themeSlice'
 
 const appReducers = combineReducers({
     employee: employeeReducer,
     attendance: attendanceReducer,
     leave: leaveReducer,
-    workLogs: workLogsReducer
+    workLogs: workLogsReducer,
+    theme: themeReducer
 })
 
 const  rootReducers = (state,action)=>{

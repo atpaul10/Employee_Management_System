@@ -8,6 +8,7 @@ import React from "react";
 import { db } from "../../../firebase";
 import { getDoc,doc } from "firebase/firestore";
 import LeaveRequestCard from "./LeaveRequestCard";
+import HolidayCalendar from "../../../HoildayCalendar/hoildayCalendar";
 
 const UserDashboard = () => {
 
@@ -93,7 +94,7 @@ const lastThreeLeaveRequest = [...leaveRequest]
               </Grid2>
 
               {/* Earned Leave */}
-              <Grid2 item>
+              <Grid2 >
                 <Box sx={{ position: "relative", display: "inline-flex" }}>
                   <CircularProgress variant="determinate" value={leaveBalance.Earned * 10} size={50} thickness={5} sx={{ color: "#3f51b5" }} />
                   <Box
@@ -119,7 +120,9 @@ const lastThreeLeaveRequest = [...leaveRequest]
           )}
         </CardContent>
       </Card>
-
+          <Grid2 item xs={12} md={6}>
+            <HolidayCalendar/>
+          </Grid2>
       <Box sx={{padding:5}}>
       {loading ? (
         <CircularProgress style={{color:"#40513B"}} size={30} thickness={5} />
